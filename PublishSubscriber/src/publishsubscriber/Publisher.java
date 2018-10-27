@@ -2,6 +2,7 @@ package publishsubscriber;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.Connection;
@@ -55,8 +56,9 @@ public class Publisher {
 
             TextMessage message = session.createTextMessage();
             while (true) {
-                Thread.sleep(100);
-                message.setText("ender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
+                //Thread.sleep(100);
+                //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
+                message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()));
                 log++;
                 producer.send(message);
                 System.out.println("Enviado: " + message.getText());
@@ -65,14 +67,27 @@ public class Publisher {
             e.printStackTrace();
         }
     }
+    
+     private Double randomValueGenerator(Double rangeMin, Double rangeMax) {
+        return (rangeMin + (rangeMax - rangeMin) * (new Random()).nextDouble());
+    }
+
+    private String randomOperation() {
+        int random = (int) (Math.random() * 2 + 1);
+        if (random == 1) {
+            return "Depositar";
+        } else {
+            return "Sacar";
+        }
+    }
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Sender");
         for (int i = 0; i < 500; i++) {
-            System.out.println(i);
+            //System.out.println(i);
             Publisher sender = new Publisher();
             sender.calculaTotal(i);
-            Thread.sleep(30);
+            Thread.sleep(2);
         }
     }
 }

@@ -1,8 +1,6 @@
 package publishsubscriber;
 
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -25,25 +23,25 @@ public class Receiver {
     private Session session = null;
     private Destination destination = null;
     private MessageConsumer consumer = null;
+    private ContaCorrente contaCorrente;
 
     public Receiver() {
-
+        this.contaCorrente = new ContaCorrente(500);
     }
 
     public void receberTotal() {
         new Thread() {
-
             @Override
             public void run() {
-                    receiveMessage();
-                
+                receiveMessage();
+
             }
         }.start();
 
     }
-    
+
     public void receiveMessage() {
-        SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS");
+        //SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS");
         try {
             factory = new ActiveMQConnectionFactory(
                     ActiveMQConnection.DEFAULT_BROKER_URL);
@@ -60,8 +58,9 @@ public class Receiver {
 
                 if (message instanceof TextMessage) {
                     TextMessage text = (TextMessage) message;
-
-                    System.out.println("Mensagem recebida: " + text.getText() + " - " + message.getJMSTimestamp());
+                    String[] info = text.getText().split(";");
+                    System.out.println(info[1] + ": - Cliente: " + info[0] + " - Saldo: " + this.contaCorrente.realizarOp(Integer.parseInt(info[0]), info[1], Double.parseDouble(info[2])) + " - " + message.getJMSTimestamp());
+                    //System.out.println("Mensagem recebida: " + text.getText() + " - " + message.getJMSTimestamp());
                 }
             }
 
@@ -69,10 +68,11 @@ public class Receiver {
             e.printStackTrace();
         }
     }
+    
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Receiver");
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
             Receiver receiver = new Receiver();
             receiver.receberTotal();
         }
