@@ -18,6 +18,14 @@ public class ContaCorrente {
     public ContaCorrente(Integer size) {
         startMap(500);
     }
+    
+    public void printResults(){
+        for (Map.Entry<Integer, Double> entry : contaCorrente.entrySet()) {
+            Integer key = entry.getKey();
+            Double value = entry.getValue();
+            System.out.println(key + " - " + value);
+        }
+    }
 
     private void startMap(Integer size) {
         this.contaCorrente = new HashMap<>();

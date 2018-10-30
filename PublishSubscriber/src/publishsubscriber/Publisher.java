@@ -1,8 +1,15 @@
 package publishsubscriber;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.Connection;
@@ -22,29 +29,45 @@ public class Publisher {
     private Session session = null;
     private Destination destination = null;
     private MessageProducer producer = null;
+    List<String> mensagensEnviadas;
 
     public Publisher() {
-
+        this.mensagensEnviadas = new ArrayList<>();
     }
 
     public void calculaTotal(Integer i) {
-        new Thread() {
+        Thread t = new Thread() {
 
             @Override
             public void run() {
                 try {
                     sendMessage(i);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
+                    try {
+                        writeFile(mensagensEnviadas);
+                    } catch (IOException e) {
+                        Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
-        }.start();
+        };
+
+        t.start();
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                System.out.println("30 Seconds Later");
+                if (null != t) {
+                    t.interrupt();
+                }
+            }
+        }, 300000);
 
     }
 
     public void sendMessage(Integer i) throws InterruptedException {
         SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS");
-        Long log = 0L;
         try {
             factory = new ActiveMQConnectionFactory(
                     ActiveMQConnection.DEFAULT_BROKER_URL);
@@ -55,20 +78,61 @@ public class Publisher {
             producer = session.createProducer(destination);
 
             TextMessage message = session.createTextMessage();
-            while (true) {
-                //Thread.sleep(100);
+            for (int j = 0; j < 1000; j++) {
+                Thread.sleep(randomValueGenerator(100.00, 300.00).intValue());
                 //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
                 message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()));
-                log++;
+                mensagensEnviadas.add(message.getText());
                 producer.send(message);
-                System.out.println("Enviado: " + message.getText());
+                //System.out.println("Enviado: " + message.getText());
             }
+
         } catch (JMSException e) {
             e.printStackTrace();
         }
     }
-    
-     private Double randomValueGenerator(Double rangeMin, Double rangeMax) {
+
+private void writeFile(List<String> result) throws IOException {
+        String content = "";
+        for (String output : result) {
+            content += (output) + "\n";
+        }
+
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+
+        try {
+            fw = new FileWriter("/output/sender.csv");
+            bw = new BufferedWriter(fw);
+            bw.write(content);
+
+            System.out.println("Done");
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+
+                if (fw != null) {
+                    fw.close();
+                }
+
+            } catch (IOException ex) {
+
+                ex.printStackTrace();
+
+            }
+
+        }
+    }
+
+    private Double randomValueGenerator(Double rangeMin, Double rangeMax) {
         return (rangeMin + (rangeMax - rangeMin) * (new Random()).nextDouble());
     }
 
