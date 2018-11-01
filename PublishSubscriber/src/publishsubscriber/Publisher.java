@@ -43,11 +43,7 @@ public class Publisher {
                 try {
                     sendMessage(i);
                 } catch (InterruptedException ex) {
-                    try {
-                        writeFile(mensagensEnviadas);
-                    } catch (IOException e) {
-                        Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+
                 }
             }
         };
@@ -62,7 +58,7 @@ public class Publisher {
                     t.interrupt();
                 }
             }
-        }, 300000);
+        }, 100000);
 
     }
 
@@ -83,7 +79,16 @@ public class Publisher {
                 //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
                 message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()));
                 mensagensEnviadas.add(message.getText());
-                producer.send(message);
+                
+                try {
+                    producer.send(message);
+                } catch (JMSException e) {
+                    try {
+                        writeFile(mensagensEnviadas);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Publisher.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                 //System.out.println("Enviado: " + message.getText());
             }
 
@@ -92,7 +97,7 @@ public class Publisher {
         }
     }
 
-private void writeFile(List<String> result) throws IOException {
+    private void writeFile(List<String> result) throws IOException {
         String content = "";
         for (String output : result) {
             content += (output) + "\n";
@@ -102,7 +107,7 @@ private void writeFile(List<String> result) throws IOException {
         FileWriter fw = null;
 
         try {
-            fw = new FileWriter("/output/sender.csv");
+            fw = new FileWriter("/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/output/sender.csv", true);
             bw = new BufferedWriter(fw);
             bw.write(content);
 
@@ -147,11 +152,11 @@ private void writeFile(List<String> result) throws IOException {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Sender");
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 300; i++) {
             //System.out.println(i);
             Publisher sender = new Publisher();
             sender.calculaTotal(i);
-            Thread.sleep(2);
+            Thread.sleep(100);
         }
     }
 }

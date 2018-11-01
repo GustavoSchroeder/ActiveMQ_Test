@@ -47,12 +47,7 @@ public class Receiver {
                 try {
                     receiveMessage();
                 } catch (InterruptedException ex) {
-                    try {
-                        writeFile(mensagensRecebidas);
-                    } catch (IOException e) {
-                        Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    contaCorrente.printResults();
+
                 }
             }
         };
@@ -66,7 +61,7 @@ public class Receiver {
                     t.interrupt();
                 }
             }
-        }, 300000);
+        }, 100000);
 
     }
 
@@ -82,7 +77,18 @@ public class Receiver {
             consumer = session.createConsumer(destination);
 
             while (true) {
-                Message message = consumer.receive();
+                Message message;
+                try {
+                    message = consumer.receive();
+                } catch (JMSException e) {
+                    try {
+                        writeFile(mensagensRecebidas);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Receiver.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    contaCorrente.printResults();
+                    return;
+                }
 
                 if (message instanceof TextMessage) {
                     TextMessage text = (TextMessage) message;
@@ -113,7 +119,7 @@ public class Receiver {
         FileWriter fw = null;
 
         try {
-            fw = new FileWriter("/output/receiver.csv");
+            fw = new FileWriter("/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/output/receiver.csv", true);
             bw = new BufferedWriter(fw);
             bw.write(content);
 
@@ -145,7 +151,7 @@ public class Receiver {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Receiver");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             Receiver receiver = new Receiver();
             receiver.receberTotal();
         }
