@@ -65,8 +65,9 @@ public class Publisher {
     public void sendMessage(Integer i) throws InterruptedException {
         SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS");
         try {
-            factory = new ActiveMQConnectionFactory(
-                    ActiveMQConnection.DEFAULT_BROKER_URL);
+//            factory = new ActiveMQConnectionFactory(
+//                    ActiveMQConnection.DEFAULT_BROKER_URL);
+            factory = new ActiveMQConnectionFactory("admin", "admin", "tcp://131.108.101.210:61616");
             connection = factory.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -79,7 +80,7 @@ public class Publisher {
                 //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
                 message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()));
                 mensagensEnviadas.add(message.getText());
-                
+
                 try {
                     producer.send(message);
                 } catch (JMSException e) {

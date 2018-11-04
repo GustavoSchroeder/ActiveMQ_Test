@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://www.springframework.org/schema/beans/spring-beans.xsd" uri="www.springframework.org/schema/beans/spring-beans.xsd"/>
+    <system systemId="http://activemq.apache.org/schema/core/activemq-core.xsd" uri="activemq.apache.org/schema/core/activemq-core.xsd"/>
+    <system systemId="http://camel.apache.org/schema/spring/camel-spring.xsd" uri="camel.apache.org/schema/spring/camel-spring.xsd"/>
+    <system systemId="http://activemq.apache.org/camel/schema/spring/camel-spring.xsd" uri="camel.apache.org/schema/spring/camel-spring.xsd"/>
+</catalog>

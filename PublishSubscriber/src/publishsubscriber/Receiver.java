@@ -68,8 +68,9 @@ public class Receiver {
     public void receiveMessage() throws InterruptedException {
 
         try {
-            factory = new ActiveMQConnectionFactory(
-                    ActiveMQConnection.DEFAULT_BROKER_URL);
+//            factory = new ActiveMQConnectionFactory(
+//                    ActiveMQConnection.DEFAULT_BROKER_URL);
+            factory = new ActiveMQConnectionFactory("admin", "admin", "tcp://131.108.101.210:61616");
             connection = factory.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
