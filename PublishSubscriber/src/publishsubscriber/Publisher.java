@@ -19,7 +19,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class Publisher {
@@ -29,8 +28,9 @@ public class Publisher {
     private Session session = null;
     private Destination destination = null;
     private MessageProducer producer = null;
-    List<String> mensagensEnviadas;
-
+    private List<String> mensagensEnviadas;
+    private static Integer MAX_THREADS;
+    
     public Publisher() {
         this.mensagensEnviadas = new ArrayList<>();
     }
@@ -58,7 +58,7 @@ public class Publisher {
                     t.interrupt();
                 }
             }
-        }, 100000);
+        }, 20000);
 
     }
 
@@ -78,7 +78,7 @@ public class Publisher {
             for (int j = 0; j < 1000; j++) {
                 Thread.sleep(randomValueGenerator(100.00, 300.00).intValue());
                 //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
-                message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()));
+                message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()) + ";" + MAX_THREADS);
                 mensagensEnviadas.add(message.getText());
 
                 try {
@@ -138,6 +138,15 @@ public class Publisher {
         }
     }
 
+    public static Integer getMAX_THREADS() {
+        return MAX_THREADS;
+    }
+
+    public static void setMAX_THREADS(Integer MAX_THREADS) {
+        Publisher.MAX_THREADS = MAX_THREADS;
+    }
+    
+
     private Double randomValueGenerator(Double rangeMin, Double rangeMax) {
         return (rangeMin + (rangeMax - rangeMin) * (new Random()).nextDouble());
     }
@@ -156,8 +165,9 @@ public class Publisher {
         for (int i = 0; i < 300; i++) {
             //System.out.println(i);
             Publisher sender = new Publisher();
+            sender.setMAX_THREADS(i);
             sender.calculaTotal(i);
-            Thread.sleep(100);
+            Thread.sleep(1400);
         }
     }
 }

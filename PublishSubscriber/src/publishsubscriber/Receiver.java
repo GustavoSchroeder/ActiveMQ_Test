@@ -3,7 +3,9 @@ package publishsubscriber;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,7 +19,6 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 /**
@@ -66,7 +67,7 @@ public class Receiver {
     }
 
     public void receiveMessage() throws InterruptedException {
-
+    SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS"); 
         try {
 //            factory = new ActiveMQConnectionFactory(
 //                    ActiveMQConnection.DEFAULT_BROKER_URL);
@@ -96,7 +97,7 @@ public class Receiver {
 
                     try {
                         String[] info = text.getText().split(";");
-                        mensagensRecebidas.add(text.getText() + message.getJMSTimestamp());
+                        mensagensRecebidas.add(text.getText() + ";" + simpleDate.format(new Date()));
                         this.contaCorrente.realizarOp(Integer.parseInt(info[0]), info[1], Double.parseDouble(info[2]));
                         //System.out.println(info[1] + ": - Cliente: " + info[0] + " - Saldo: " + this.contaCorrente.realizarOp(Integer.parseInt(info[0]), info[1], Double.parseDouble(info[2])) + " - " + message.getJMSTimestamp());
                         //System.out.println("Mensagem recebida: " + text.getText() + " - " + message.getJMSTimestamp());

@@ -4,15 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="DSWIII">
             <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/Receiver.java</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/examples/conf/activemq-demo.xml</file>
             <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/output/receiver.csv</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/examples/conf/activemq-specjms.xml</file>
             <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/Publisher.java</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/examples/conf/activemq.xml</file>
             <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/src/publishsubscriber/output/sender.csv</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/docs/WebConsole-README.txt</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/bin/env</file>
-            <file>file:/Users/gustavolazarottoschroeder/Documents/GitHub/ActiveMQ_Test/PublishSubscriber/lib/apache-activemq-5.15.6/examples/conf/activemq-static-network-broker2.xml</file>
         </group>
     </open-files>
 </project-private>
