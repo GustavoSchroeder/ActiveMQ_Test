@@ -3,6 +3,7 @@ package publishsubscriber;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class Receiver {
             public void run() {
                 try {
                     receiveMessage();
-                } catch (InterruptedException ex) {
+                } catch (InterruptedException | ParseException ex) {
 
                 }
             }
@@ -62,12 +63,12 @@ public class Receiver {
                     t.interrupt();
                 }
             }
-        }, 100000);
+        }, 200000);
 
     }
 
-    public void receiveMessage() throws InterruptedException {
-    SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS"); 
+    public void receiveMessage() throws InterruptedException, ParseException {
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
         try {
 //            factory = new ActiveMQConnectionFactory(
 //                    ActiveMQConnection.DEFAULT_BROKER_URL);
@@ -97,10 +98,8 @@ public class Receiver {
 
                     try {
                         String[] info = text.getText().split(";");
-                        mensagensRecebidas.add(text.getText() + ";" + simpleDate.format(new Date()));
+                        mensagensRecebidas.add(simpleDate.format(new Date()) + ";" + (diffInSec(new Date(), simpleDate.parse(info[3]))) + ";" + text.getText().getBytes().length);
                         this.contaCorrente.realizarOp(Integer.parseInt(info[0]), info[1], Double.parseDouble(info[2]));
-                        //System.out.println(info[1] + ": - Cliente: " + info[0] + " - Saldo: " + this.contaCorrente.realizarOp(Integer.parseInt(info[0]), info[1], Double.parseDouble(info[2])) + " - " + message.getJMSTimestamp());
-                        //System.out.println("Mensagem recebida: " + text.getText() + " - " + message.getJMSTimestamp());
                     } catch (NumberFormatException e) {
 
                     }
@@ -109,6 +108,11 @@ public class Receiver {
         } catch (JMSException e) {
             e.printStackTrace();
         }
+    }
+    
+    private Long diffInSec(Date newerDate, Date olderDate){
+        long diffInMillies = Math.abs(newerDate.getTime() - olderDate.getTime());
+        return diffInMillies;
     }
 
     private void writeFile(List<String> result) throws IOException {
@@ -150,8 +154,31 @@ public class Receiver {
 
         }
     }
+    
+    public void receiveOneMessage() throws InterruptedException, ParseException {
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
+        try {
+            factory = new ActiveMQConnectionFactory("admin", "admin", "tcp://131.108.101.210:61616");
+            connection = factory.createConnection();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            destination = session.createQueue("SAMPLEQUEUE1");
+            consumer = session.createConsumer(destination);
 
-    public static void main(String[] args) throws InterruptedException {
+                Message message;
+                try {
+                   message = consumer.receive();
+                   simpleDate.format(new Date());
+                } catch (JMSException e) {
+                  
+                }
+
+            } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException, ParseException {
         System.out.println("Receiver");
         for (int i = 0; i < 2; i++) {
             Receiver receiver = new Receiver();

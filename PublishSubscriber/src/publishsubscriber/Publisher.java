@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -30,7 +31,7 @@ public class Publisher {
     private MessageProducer producer = null;
     private List<String> mensagensEnviadas;
     private static Integer MAX_THREADS;
-    
+
     public Publisher() {
         this.mensagensEnviadas = new ArrayList<>();
     }
@@ -63,7 +64,7 @@ public class Publisher {
     }
 
     public void sendMessage(Integer i) throws InterruptedException {
-        SimpleDateFormat simpleDate = new SimpleDateFormat("HH:MM:SS");
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
         try {
 //            factory = new ActiveMQConnectionFactory(
 //                    ActiveMQConnection.DEFAULT_BROKER_URL);
@@ -73,12 +74,12 @@ public class Publisher {
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             destination = session.createQueue("SAMPLEQUEUE1");
             producer = session.createProducer(destination);
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
             TextMessage message = session.createTextMessage();
             for (int j = 0; j < 1000; j++) {
                 Thread.sleep(randomValueGenerator(100.00, 300.00).intValue());
-                //message.setText("Sender: " + i + " - ID: " + log.toString() + " - Teste - " + simpleDate.format(new Date()));
-                message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()) + ";" + MAX_THREADS);
+                message.setText(i + ";" + randomOperation() + ";" + randomValueGenerator(10.00, 10000.00) + ";" + simpleDate.format(new Date()) + ";" + MAX_THREADS + ";" + fillBytes(100));
                 mensagensEnviadas.add(message.getText());
 
                 try {
@@ -96,6 +97,40 @@ public class Publisher {
         } catch (JMSException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessageOneMessage() throws InterruptedException {
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
+        try {
+            factory = new ActiveMQConnectionFactory("admin", "admin", "tcp://131.108.101.210:61616");
+            connection = factory.createConnection();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            destination = session.createQueue("SAMPLEQUEUE1");
+            producer = session.createProducer(destination);
+
+            TextMessage message = session.createTextMessage();
+            message.setText("");
+
+            try {
+                System.out.println(simpleDate.format(new Date()));
+                producer.send(message);
+            } catch (JMSException e) {
+            }
+
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String fillBytes(Integer qtdeBytes) {
+        String aux = "";
+
+        for (int i = 0; i < qtdeBytes; i++) {
+            aux += 'R';
+        }
+
+        return aux;
     }
 
     private void writeFile(List<String> result) throws IOException {
@@ -145,7 +180,6 @@ public class Publisher {
     public static void setMAX_THREADS(Integer MAX_THREADS) {
         Publisher.MAX_THREADS = MAX_THREADS;
     }
-    
 
     private Double randomValueGenerator(Double rangeMin, Double rangeMax) {
         return (rangeMin + (rangeMax - rangeMin) * (new Random()).nextDouble());
@@ -162,12 +196,12 @@ public class Publisher {
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println("Sender");
-        for (int i = 0; i < 300; i++) {
-            //System.out.println(i);
+
+        for (int i = 0; i < 500; i++) {
             Publisher sender = new Publisher();
             sender.setMAX_THREADS(i);
             sender.calculaTotal(i);
-            Thread.sleep(1400);
+            Thread.sleep(200);
         }
     }
 }
