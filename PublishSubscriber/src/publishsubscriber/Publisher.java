@@ -59,7 +59,7 @@ public class Publisher {
                     t.interrupt();
                 }
             }
-        }, 20000);
+        }, 300000);
 
     }
 
@@ -113,6 +113,7 @@ public class Publisher {
             message.setText("");
 
             try {
+                System.out.println(message.getText().getBytes().length);
                 System.out.println(simpleDate.format(new Date()));
                 producer.send(message);
             } catch (JMSException e) {
@@ -194,14 +195,5 @@ public class Publisher {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        System.out.println("Sender");
-
-        for (int i = 0; i < 500; i++) {
-            Publisher sender = new Publisher();
-            sender.setMAX_THREADS(i);
-            sender.calculaTotal(i);
-            Thread.sleep(200);
-        }
-    }
+    
 }

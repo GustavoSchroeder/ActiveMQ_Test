@@ -63,7 +63,7 @@ public class Receiver {
                     t.interrupt();
                 }
             }
-        }, 200000);
+        }, 300000);
 
     }
 
@@ -109,8 +109,8 @@ public class Receiver {
             e.printStackTrace();
         }
     }
-    
-    private Long diffInSec(Date newerDate, Date olderDate){
+
+    private Long diffInSec(Date newerDate, Date olderDate) {
         long diffInMillies = Math.abs(newerDate.getTime() - olderDate.getTime());
         return diffInMillies;
     }
@@ -154,7 +154,7 @@ public class Receiver {
 
         }
     }
-    
+
     public void receiveOneMessage() throws InterruptedException, ParseException {
         SimpleDateFormat simpleDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss:SSS");
         try {
@@ -165,24 +165,37 @@ public class Receiver {
             destination = session.createQueue("SAMPLEQUEUE1");
             consumer = session.createConsumer(destination);
 
-                Message message;
-                try {
-                   message = consumer.receive();
-                   simpleDate.format(new Date());
-                } catch (JMSException e) {
-                  
-                }
-
+            Message message;
+            try {
+                message = consumer.receive();
+                System.out.println("R;" + simpleDate.format(new Date()));
             } catch (JMSException e) {
+
+            }
+
+        } catch (JMSException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) throws InterruptedException, ParseException {
         System.out.println("Receiver");
+//        Receiver receiver = new Receiver();
+//        Publisher publisher = new Publisher();
+//        publisher.sendMessageOneMessage();
+//        receiver.receiveOneMessage();
         for (int i = 0; i < 2; i++) {
             Receiver receiver = new Receiver();
             receiver.receberTotal();
+        }
+        
+        System.out.println("Sender");
+
+        for (int i = 0; i < 500; i++) {
+            Publisher sender = new Publisher();
+            sender.setMAX_THREADS(i);
+            sender.calculaTotal(i);
+            Thread.sleep(200);
         }
     }
 }
